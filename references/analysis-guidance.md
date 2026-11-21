@@ -4,6 +4,10 @@
 
 Explain how the target Skill is likely to participate in an Agent workflow while keeping observed facts separate from interpretation. The report should help a reader learn why the Skill is useful, where its boundaries are, and what evidence supports each conclusion.
 
+## Language
+
+Write all semantic analysis content — node titles, summaries, analysis text, capability descriptions, input class conditions and examples, finding titles and analysis — in the **same language as the user's request**. If the request is in English, write in English. If in Chinese, write in Chinese. The scanner output (`facts.json`) is language-neutral and does not change. After completing the analysis, pass the matching `--lang` flag to `render_report.py` so the report UI also matches.
+
 ## Schema version
 
 `analysis.json` uses **schema version 2**. The root object must include `schema_version: 2` and the following arrays (may be empty but must be present): `capabilities`, `input_classes`, `lanes`, `nodes`, `edges`, `findings`. See `references/analysis-schema.md` for the full field specification.

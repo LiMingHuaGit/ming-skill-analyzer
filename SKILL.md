@@ -1,6 +1,6 @@
 ---
 name: ming-skill-analyzer
-description: "Analyze exactly one Agent skill, simulate its trigger and execution flow, and generate an evidence-linked interactive HTML report. Use when a user wants to understand, inspect, teach, or visualize one skill, including comparisons between that skill's own capabilities or execution branches. Do not use for analyzing or comparing multiple skills in one run, executing or modifying the target skill, or ordinary code review."
+description: "Analyze exactly one Agent skill, simulate its trigger and execution flow, and generate an evidence-linked interactive HTML report. Use when a user wants to understand, inspect, teach, or visualize one skill, including comparisons between that skill's own capabilities or execution branches. Do not use for analyzing or comparing multiple skills in one run, executing or modifying the target skill, or ordinary code review. Output language follows the user's input language."
 license: MIT
 compatibility: "Python 3.10+ standard library. The host must be able to read the target skill, write JSON and HTML files, and open or serve a local HTML report."
 ---
@@ -11,7 +11,7 @@ Analyze one target Skill as a separate object. Keep deterministic file facts sep
 
 ## Workflow
 
-1. Resolve the target Skill directory and the user's test request. The target must contain `SKILL.md`. If the request is missing, use a clearly labeled representative scenario inferred from the description.
+1. Resolve the target Skill directory and the user's test request. The target must contain `SKILL.md`. If the request is missing, use a clearly labeled representative scenario inferred from the description. **Language rule**: write all analysis content (node titles, summaries, capability descriptions, finding titles and analysis text) in the same language as the user's request — English if the request is in English, Chinese if in Chinese.
 2. Ask where the user wants the analysis artifacts written unless the user already supplied an output directory. Explain that the directory will contain source excerpts and AI analysis. Require a location outside the target Skill, and do not select a default silently.
 3. Check the chosen output directory before writing. If analyzer files already exist there, require a different output directory. Never overwrite an existing analysis run.
 4. Run `scripts/scan_skill.py <target> --output-dir <output> --prompt <request>`. This creates `facts.json` and `analysis-template.json` without executing target scripts.
@@ -19,7 +19,7 @@ Analyze one target Skill as a separate object. Keep deterministic file facts sep
 6. Use `facts.json` as the factual authority. Inspect original files only when the facts are truncated or a semantic judgment needs wider context. Never claim a file, line, dependency, or tool call that is absent from the evidence.
 7. Complete `analysis.json` from the template. Explain routing, full-instruction loading, resource selection, planned actions, verification, feedback, strengths, and risks. Mark inference as inference.
 8. Run `scripts/validate_analysis.py <facts.json> <analysis.json> --strict`. Fix every error before rendering.
-9. Run `scripts/render_report.py <facts.json> <analysis.json> --output <report.html> --live`.
+9. Run `scripts/render_report.py <facts.json> <analysis.json> --output <report.html> --live --lang <zh|en>`. Pass `--lang en` when the analysis was written in English, `--lang zh` for Chinese (default).
 10. Start and open the report with `scripts/serve_report.py --report <report.html> --skill-root <target> --open`. Keep the read-only server running through the user handoff. If the default port is occupied, retry on another loopback port in the range 8765–8785; never broaden the bind address beyond `127.0.0.1`. Confirm that the report URL returns successfully before completion. Do not open a live report directly with `file://`.
 11. Report the actual live URL and port, HTML path, reproducible startup command, JSON paths, analyzed scenario, capability count, branch count, validation quality metrics, redacted or skipped files, and any behavior that remains simulated rather than observed. Do not stop the live server unless the user asks.
 
