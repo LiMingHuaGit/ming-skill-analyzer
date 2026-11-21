@@ -31,7 +31,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 /* ── Design tokens ── dark-first, developer tool
@@ -57,8 +57,8 @@
   --node-gate: #fb7185;
   --node-validation: #a78bfa;
   --node-terminal: #94a3b8;
-  --ff-display: 'Space Grotesk', system-ui, sans-serif;
-  --ff-body:    'Inter', system-ui, sans-serif;
+  --ff-display: 'Space Grotesk', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
+  --ff-body:    'Inter', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
   --ff-mono:    'JetBrains Mono', ui-monospace, monospace;
   color-scheme: dark;
 }
@@ -337,7 +337,10 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
       <a href="#install">安装</a>
       <a href="https://github.com/LiMingHuaGit/ming-skill-analyzer">GitHub ↗</a>
     </nav>
-    <button class="theme-btn" id="themeBtn" aria-label="切换主题">◑</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="/en/" class="theme-btn" style="text-decoration:none;font-size:11px;letter-spacing:.04em" aria-label="English version">EN</a>
+      <button class="theme-btn" id="themeBtn" aria-label="切换主题">◑</button>
+    </div>
   </div>
 </nav>
 
