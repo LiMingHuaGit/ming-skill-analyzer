@@ -1,5 +1,7 @@
 # ming-skill-analyzer
 
+**English** · [中文](README.zh-CN.md)
+
 Analyze an Agent Skill and generate a live interactive HTML report with a dynamic flowchart, source browser, and evidence-linked findings. Every conclusion links back to redacted source content and line ranges.
 
 This Skill is for understanding, teaching, comparing, and auditing workflow design. It does not execute or modify the target Skill.
