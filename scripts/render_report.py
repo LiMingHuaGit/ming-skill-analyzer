@@ -30,9 +30,11 @@ def parse_args() -> argparse.Namespace:
 def safe_json(value: object) -> str:
     return (
         json.dumps(value, ensure_ascii=False)
-        .replace("<", r"<")
-        .replace(">", r">")
-        .replace("&", r"&")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
+        .replace(" ", "\\u2028")
+        .replace(" ", "\\u2029")
     )
 
 

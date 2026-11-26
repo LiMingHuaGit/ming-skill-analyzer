@@ -92,6 +92,53 @@ Run `python3 scripts/check.py` and verify the result.
         self.assertIn("动态流程图", html)
         self.assertIn("demo-skill", html)
 
+    def _minimal_valid_analysis(self) -> dict:
+        """A schema-v2 analysis built from the scan template that passes strict validation."""
+        analysis = json.loads((self.output / "analysis-template.json").read_text(encoding="utf-8"))
+        analysis["schema_version"] = 2
+        analysis["scenario"]["invocation_mode"] = "automatic"
+        analysis["scenario"]["context_summary"] = "test"
+        analysis["capabilities"] = []
+        analysis["input_classes"] = []
+        analysis["lanes"] = []
+        analysis["edges"] = []
+        analysis["overview"].update({"summary": "ok", "routing_score": 50, "routing_label": "matched"})
+        for node in analysis["nodes"]:
+            node["status"] = "succeeded"
+            node["summary"] = "done"
+            node["analysis"] = "test"
+        analysis["findings"] = []
+        return analysis
+
+    def test_render_escapes_script_breakout_in_embedded_json(self) -> None:
+        """Embedded facts/analysis must not be able to close the <script> tag.
+
+        Regression test: safe_json() previously used no-op replacements, so any
+        embedded string containing </script> broke out of the inline script and
+        aborted the whole page (blank report). The angle brackets must be
+        escaped to \\u003c / \\u003e so the payload stays inside the string.
+        """
+        self.run_script("scan_skill.py", self.skill, "--output-dir", self.output)
+        payload = "</script><img src=x onerror=alert(1)>SKILLANALYZERPWNED"
+        analysis = self._minimal_valid_analysis()
+        analysis["overview"]["summary"] = payload
+        analysis["nodes"][0]["analysis"] = payload
+        analysis_path = self.output / "analysis.json"
+        analysis_path.write_text(json.dumps(analysis), encoding="utf-8")
+
+        report = self.output / "report.html"
+        render = self.run_script("render_report.py", self.output / "facts.json", analysis_path, "--output", report)
+        self.assertEqual(render.returncode, 0, render.stderr)
+        html = report.read_text(encoding="utf-8")
+
+        # The raw breakout sequence must never appear verbatim in the output.
+        self.assertNotIn("</script><img", html)
+        # The content itself is still embedded, just escaped.
+        self.assertIn("SKILLANALYZERPWNED", html)
+        self.assertIn("\\u003c/script\\u003e", html)
+        # <script> opens and closes stay balanced (no premature close).
+        self.assertEqual(html.count("<script>"), html.count("</script>"))
+
     def test_refuses_to_overwrite_scan_outputs(self) -> None:
         first = self.run_script("scan_skill.py", self.skill, "--output-dir", self.output)
         second = self.run_script("scan_skill.py", self.skill, "--output-dir", self.output)
